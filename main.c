@@ -3,83 +3,96 @@
 
 #define DUPLICATE_CHAR '_'
 
+#define ONLY_WHITESPACE_CASE "_"
+#define ONLY_WHITESPACES_CASE "_________"
 #define BASE_CASE "_On__my___home_world"
+#define BASE_CASE_CHAR_AT_THE_BEGGING "On__my___home_world"
+#define ALL_GOOD_CASE "On_my_home_world"
 #define CASE_WHITESPACE_IN_THE_END "_On__my___home_world_"
 #define CASE_WHITESPACES_IN_THE_END "_On__my___home_world___"
-#define CASE_WHITESPACE_AT_THE_BEGGINING "___On__my___home_world"
-#define CASE_WHITESPACES_AT_THE_BEGGINING_AND_IN_THE_END "___On__my___home_world____"
+#define CASE_WHITESPACE_AT_THE_BEGINNING "___On__my___home_world"
+#define CASE_WHITESPACES_AT_THE_BEGINNING_AND_IN_THE_END "___On__my___home_world____"
 
-char *shiftLeftToIndent(char str[], int pos, int indent)
-{
-    int len = strlen(str);
-    int lenSubStr = len-(pos+2) ;
-    for (int j=0; j <= lenSubStr; j++)
-    {
-        str[pos+j] = str[pos+j+(indent - pos-1)];
-    }
-    str[len-1] = '\0';
-}
+#define EXPECTED_RESULT "On_my_home_world"
 
-int getFirstNotDuplicateChar(char str[], int indent)
+
+void normalize(char str[])
 {
-    int k = 0;
-    int len = strlen(str);
-    for(k=indent; k<=len; k++)
+    int i = 1, j;
+    if (DUPLICATE_CHAR == str[0])
     {
-        if (DUPLICATE_CHAR != str[k]) {
-            break;
+        for ( ; DUPLICATE_CHAR == str[i]; ++i);
+        if ('\0' == str[i])
+        {
+            str[0] = '\0';
+            return;
         }
+        j = 0;
+    } else {
+        do {
+            if ('\0' == str[++i])
+            {
+                return;
+            }
+        } while(DUPLICATE_CHAR != str[i] || DUPLICATE_CHAR != str[i + 1]);
+        j = i;
     }
-    return k;
-}
-
-char *cleaner(char str[])
-{
-
-    if (DUPLICATE_CHAR == str[0]){
-        int startIndent = getFirstNotDuplicateChar(str, 0);
-        shiftLeftToIndent(str, 0, startIndent + 1);
-    }
-    int len = strlen(str);
-    for(int i=0; i <= len;i++)
+    for ( ; ; )
     {
-        if (DUPLICATE_CHAR == str[i] && DUPLICATE_CHAR == str[i+1] ){
-            int k2 = getFirstNotDuplicateChar(str, i);
-            shiftLeftToIndent(str, i, k2);
+        while (DUPLICATE_CHAR != str[i])
+        {
+            if('\0' == (str[j++] = str[i++]))
+            {
+                return;
+            }
         }
+        if (DUPLICATE_CHAR == str[++i])
+        {
+            while (DUPLICATE_CHAR == str[++i]);
+            if ('\0' == str[i]) {
+                str[j] = '\0';
+                return;
+            }
+        }
+        str[j++] = DUPLICATE_CHAR;
     }
-
-    int lenAfter = strlen(str);
-
-    if(DUPLICATE_CHAR == str[lenAfter-1])
-    {
-        str[lenAfter-1] = '\0';
-    }
-    return str;
 }
 
-void testCleaner(char * caseTitle, char * before, char * after)
+void testNormalize(char title[], char str[], char expected[])
 {
-    cleaner(after);
-    printf("%s: [Before: \"%s\", After: \"%s\"] \n", caseTitle, before, after);
+    printf("Before[%s]: '%s'\n", title, str);
+    normalize(str);
+
+    if(0 == strcmp(str, expected))
+    {
+        printf("success %s: [Result: \"%s\", ExpectedResult: \"%s\"] \n", title, str, expected);
+    } else {
+        printf("failure %s: [Result: \"%s\", ExpectedResult: \"%s\"] \n", title, str, expected);
+    }
 }
 
 int main()
 {
-    char base_case_string[] = BASE_CASE;
+    char onlyWhitespaceCase[] = ONLY_WHITESPACE_CASE;
+    char onlyWhitespacesCase[] = ONLY_WHITESPACES_CASE;
+    char baseCase[] = BASE_CASE;
+    char allGoodCase[] = ALL_GOOD_CASE;
+    char homeWorld[] = "my___home_world";
+    char baseCaseCharAtTheBegging[] = BASE_CASE_CHAR_AT_THE_BEGGING;
     char string_with_whitespace_in_the_end[] = CASE_WHITESPACE_IN_THE_END;
-    char string_with_whitespaces_at_the_beggining[] = CASE_WHITESPACE_AT_THE_BEGGINING;
+    char string_with_whitespaces_at_the_beginning[] = CASE_WHITESPACE_AT_THE_BEGINNING;
     char string_with_whitespaces_in_the_end[] = CASE_WHITESPACES_IN_THE_END;
-    char string_with_whitespaces_at_the_beggining_and_in_the_end[] = CASE_WHITESPACES_AT_THE_BEGGINING_AND_IN_THE_END;
+    char string_with_whitespaces_at_the_beginning_and_in_the_end[] = CASE_WHITESPACES_AT_THE_BEGINNING_AND_IN_THE_END;
 
-    testCleaner("BASE_CASE", BASE_CASE, base_case_string);
-    testCleaner("CASE_WHITESPACE_IN_THE_END", CASE_WHITESPACE_IN_THE_END, string_with_whitespace_in_the_end);
-    testCleaner("CASE_WHITESPACES_IN_THE_END", CASE_WHITESPACES_IN_THE_END, base_case_string);
-    testCleaner("CASE_WHITESPACE_AT_THE_BEGGINING", CASE_WHITESPACE_AT_THE_BEGGINING, string_with_whitespaces_at_the_beggining);
-    testCleaner("CASE_WHITESPACES_AT_THE_BEGGINING_AND_IN_THE_END", CASE_WHITESPACES_AT_THE_BEGGINING_AND_IN_THE_END, string_with_whitespaces_at_the_beggining_and_in_the_end);
-
+    testNormalize("ONLY_WHITESPACE_CASE", onlyWhitespaceCase, "");
+    testNormalize("ONLY_WHITESPACES_CASE", onlyWhitespacesCase, "");
+    testNormalize("BASE_CASE", baseCase, EXPECTED_RESULT);
+    testNormalize("ALL_GOOD_CASE", allGoodCase, EXPECTED_RESULT);
+    testNormalize("my___home_world", homeWorld, "my_home_world");
+    testNormalize("BASE_CASE_CHAR_AT_THE_BEGGING", baseCaseCharAtTheBegging, EXPECTED_RESULT);
+    testNormalize("CASE_WHITESPACE_IN_THE_END", string_with_whitespace_in_the_end, EXPECTED_RESULT);
+    testNormalize("CASE_WHITESPACES_IN_THE_END", string_with_whitespaces_in_the_end, EXPECTED_RESULT);
+    testNormalize("CASE_WHITESPACE_AT_THE_BEGINNING", string_with_whitespaces_at_the_beginning, EXPECTED_RESULT);
+    testNormalize("CASE_WHITESPACES_AT_THE_BEGINNING_AND_IN_THE_END", string_with_whitespaces_at_the_beginning_and_in_the_end, EXPECTED_RESULT);
     return 0;
 }
-
-
-

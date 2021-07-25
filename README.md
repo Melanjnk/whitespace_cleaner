@@ -8,6 +8,6 @@
     * Local Run with any *C* compiler
 
 2. It was written on onlingdb:
-    * Last updated: [Develop link](https://www.onlinegdb.com/Zg6zPySCq)
+    * Last updated: [Develop link](https://onlinegdb.com/IxfEJ-EtL)
 
 If you chose *onlinegdb* you can run it from keyboard: Press **F9**
